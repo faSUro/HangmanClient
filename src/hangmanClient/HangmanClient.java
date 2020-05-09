@@ -6,18 +6,31 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Random;
-import java.util.Scanner;
 
-public class HangmanClient {
+/**
+ * Crea un client che si connette ad un server per giocare
+ * una parita all'impiccato (la partita è giocata automaticamente
+ * ed in maniera casuale).
+ * 
+ * @author Nicolò Fasulo <fasulo.nicol@gmail.com>
+ */
+public class HangmanClient extends AHangmanClient {
 	
-	@SuppressWarnings("resource")
+	/**
+	 * Ad ogni iterazione, il server stampa 3 righe (salvate in line1,line2 e 
+	 * line3), tranne quando il gioco è concluso e ne vengono stampate solo 2.
+	 * Il ciclo while è basato su questo e si interrompe nel caso line3 sia nulla.
+	 * Non è possibile giocare "attivamente", la lettera inviata al server è generata
+	 * in maniera casuale.
+	 * 
+	 * @throws IOException
+	 */
+	@Override
 	public void connectToServer() throws IOException {
 		Random randomGenerator = new Random();
 		String line1 = "";
 		String line2 = "";
 		String line3 = "";
-		
-		int i = 0;
 		
 		Socket socket = new Socket("localhost", 8888);
 		BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -38,15 +51,6 @@ public class HangmanClient {
 		}
 		
 		socket.close();
-	}
-	
-	public static void main(String[] args) {
-		HangmanClient client = new HangmanClient();
-		try {
-			client.connectToServer();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
 
 }
