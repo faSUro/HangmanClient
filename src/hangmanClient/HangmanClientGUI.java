@@ -2,6 +2,8 @@ package hangmanClient;
 
 import java.awt.Container;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -30,18 +32,20 @@ public class HangmanClientGUI extends AHangmanClient {
 	private Socket socket;
 	private BufferedReader in;
 	private PrintWriter out;
+	
+	private static boolean firstClick = true;
 
 	/**
 	 *
 	 */
 	@Override
 	public void connectToServer() throws IOException {
-		/*socket = new Socket("localhost", 8888);
+		socket = new Socket("localhost", 8888);
 		in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-		out = new PrintWriter(socket.getOutputStream(), true);*/
+		out = new PrintWriter(socket.getOutputStream(), true);
 		
-		createGUI();
-		setListeners();		
+		createGUI();		
+		setListener();		
 	}
 
 	private void createGUI() {
@@ -88,9 +92,55 @@ public class HangmanClientGUI extends AHangmanClient {
 		gui.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 	}
 
-	private void setListeners() {
-		// TODO Auto-generated method stub
+	private void setListener() {
+		sendButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String line1 = "";
+				String line2 = "";
+				String line3 = "";
+				
+				if (!firstClick) {
+					String c = charTextField.getText();
+					out.println(c);
+				} else {
+					firstClick = false;
+				}		
+				
+				try {
+					line1 = in.readLine();
+					line2 = in.readLine();
+					line3 = in.readLine();
+				} catch (IOException ex) {
+					ex.printStackTrace();
+				}
+				
+				if (line1 == null) 
+					line1 = "";
+				setText1(line1);
+				if (line2 == null) 
+					line2 = "";
+				setText2(line2);
+				if (line3 == null) 
+					line3 = "";
+				setText3(line3);
+			}
+			
+		});
 		
+	}
+	
+	private void setText1(String text) {
+		label1.setText(text);
+	}
+	
+	private void setText2(String text) {
+		label2.setText(text);
+	}
+	
+	private void setText3(String text) {
+		label3.setText(text);
 	}
 
 }
