@@ -78,7 +78,7 @@ public class HangmanClientGUI extends AHangmanClient {
 		
 		JPanel sendCharPanel = new JPanel();
 		charTextField = new JTextField(20);
-		sendButton = new JButton(" Send ");
+		sendButton = new JButton(" Start ");
 		sendCharPanel.add(charTextField); sendCharPanel.add(sendButton);
 		
 		mainPanel.add(emptyPanel[0]); mainPanel.add(labelPanel1); mainPanel.add(labelPanel2); 
@@ -105,6 +105,7 @@ public class HangmanClientGUI extends AHangmanClient {
 					String c = charTextField.getText();
 					out.println(c);
 				} else {
+					sendButton.setText(" Send character ");
 					firstClick = false;
 				}		
 				
@@ -125,8 +126,9 @@ public class HangmanClientGUI extends AHangmanClient {
 				if (line3 == null) 
 					line3 = "";
 				setText3(line3);
-			}
-			
+				
+				charTextField.setText("");
+			}			
 		});
 		
 	}
