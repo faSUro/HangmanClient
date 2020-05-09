@@ -5,14 +5,14 @@ import java.io.IOException;
 public class Launcher {
 
 	public static void main(String[] args) {
-		boolean GUI = false;
+		boolean GUI = true;
 		
 		AHangmanClient client;
 		
 		if (GUI) {
-			client = new HangmanClient();
-		} else {
 			client = new HangmanClientGUI();
+		} else {
+			client = new HangmanClient();
 		}
 		try {
 			client.connectToServer();

@@ -8,7 +8,7 @@ import java.net.Socket;
 import java.util.Random;
 
 /**
- * Crea un client che si connette ad un server per giocare
+ * Client che si connette ad un server per giocare
  * una parita all'impiccato (la partita è giocata automaticamente
  * ed in maniera casuale).
  * 
