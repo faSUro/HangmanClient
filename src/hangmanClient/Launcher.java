@@ -12,7 +12,7 @@ import java.io.IOException;
 public class Launcher {
 
 	public static void main(String[] args) {
-		boolean GUI = true;
+		boolean GUI = false;
 		
 		AHangmanClient client;
 		

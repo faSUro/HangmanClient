@@ -124,6 +124,14 @@ public class HangmanClientGUI extends AHangmanClient {
 				printLines();
 
 				charTextField.setText("");	
+				
+				if (label1.getText().equals("Hai perso!") || label1.getText().equals("Hai indovinato!")) {
+					try {
+						socket.close();
+					} catch (IOException e1) {
+						e1.printStackTrace();
+					}
+				}
 			}
 		});
 	}
