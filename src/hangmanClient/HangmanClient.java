@@ -14,7 +14,7 @@ import java.net.Socket;
  */
 public class HangmanClient extends AHangmanClient {
 	
-	private BufferedReader inx;
+	private BufferedReader inx; //prova
 	private PrintWriter out;
 	private BufferedReader console;
 	
