@@ -17,6 +17,12 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 
+/**
+ * Client dotato di interfaccia grafica che permette di giocare una
+ * partita all'impiccato.
+ * 
+ * @author Nicolò Fasulo <fasulo.nicol@gmail.com>
+ */
 public class HangmanClientGUI extends AHangmanClient {
 	
 	public static final int WIDTH = 500;
@@ -36,7 +42,9 @@ public class HangmanClientGUI extends AHangmanClient {
 	private static boolean firstClick = true;
 
 	/**
-	 *
+	 * Metodo che permette al client di connettersi al
+	 * server tramite una socket.
+	 * Si occupa anche di creare la GUI e settarne il listener.
 	 */
 	@Override
 	public void connectToServer() throws IOException {
@@ -48,8 +56,14 @@ public class HangmanClientGUI extends AHangmanClient {
 		setListener();		
 	}
 
+	/**
+	 * Metodo che si occupa di inizializzare la variabile
+	 * di classe "gui". Essa è composta da diverse JLabel,
+	 * un JTexField ed un JButton.
+	 */
 	private void createGUI() {
 		gui = new JFrame();
+		gui.setTitle("Hangman");
 		gui.setSize(WIDTH, HEIGHT);
 		
 		JPanel mainPanel = new JPanel();
@@ -59,7 +73,7 @@ public class HangmanClientGUI extends AHangmanClient {
 		mainPanel.setLayout(new GridLayout(8, 1));
 		
 		
-		JPanel[] emptyPanel = new JPanel[3]; //utili esclusivamente per il layout
+		JPanel[] emptyPanel = new JPanel[3]; //label vuote, utili esclusivamente per il layout
 		for (int i = 0; i < 3; i++) {
 			emptyPanel[i] = new JPanel();
 		}
@@ -92,15 +106,27 @@ public class HangmanClientGUI extends AHangmanClient {
 		gui.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 	}
 
+
+	/**
+	 * Metodo che aggiunge un listener al JButton.
+	 * Una volta premuto, stampa il testo nel JTextField tramite il PrintWriter.
+	 * Poi, legge la stringa in entrata dal BufferedReader e la suddivide per
+	 * poi mostrarla tramite le JLabel.
+	 * Infine, "svuota" il JTextField del suo contenuto.
+	 */
 	private void setListener() {
 		sendButton.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				String line1 = "";
-				String line2 = "";
-				String line3 = "";
+				String[] lineArray = null;
 				
+				/*
+				 * Questo blocco controlla se il pulsante è già stato premuto oppure no.
+				 * Se non è mai stato premuto, ne cambia il testo da "Start" a "Send character"
+				 * senza fare altro; se è già stato premuto almeno una volta, prende il testo contenuto
+				 * nel JTextField e lo stampa tramite il PrintWriter.
+				 */
 				if (!firstClick) {
 					String c = charTextField.getText();
 					out.println(c);
@@ -108,29 +134,43 @@ public class HangmanClientGUI extends AHangmanClient {
 					sendButton.setText(" Send character ");
 					firstClick = false;
 				}		
-				
+
 				try {
-					line1 = in.readLine();
-					line2 = in.readLine();
-					line3 = in.readLine();
+					lineArray = divideLines(in.readLine()); //chiamata al metodo che divide la stringa in entrata in più parti
 				} catch (IOException ex) {
 					ex.printStackTrace();
 				}
 				
-				if (line1 == null) 
-					line1 = "";
-				setText1(line1);
-				if (line2 == null) 
-					line2 = "";
-				setText2(line2);
-				if (line3 == null) 
-					line3 = "";
-				setText3(line3);
-				
-				charTextField.setText("");
-			}			
+				/*
+				 * Blocco che gestisce i diversi casi che si possono verificare
+				 * a seconda del numero di "TAB" presenti nella stringa in entrata.
+				 */
+				switch(lineArray.length) {
+				case 0:
+					setText1("Si è verificato un errore");
+					setText2("");
+					setText3("");
+					break;
+				case 1:
+					setText1(lineArray[0]);
+					setText2("");
+					setText3("");
+					break;
+				case 2:
+					setText1(lineArray[0]);
+					setText2(lineArray[1]);
+					setText3("");
+					break;
+				case 3:
+					setText1(lineArray[0]);
+					setText2(lineArray[1]);
+					setText3(lineArray[2]);
+					break;
+				}
+
+				charTextField.setText("");	
+			}
 		});
-		
 	}
 	
 	private void setText1(String text) {
@@ -144,6 +184,17 @@ public class HangmanClientGUI extends AHangmanClient {
 	private void setText3(String text) {
 		label3.setText(text);
 	}
+	
+	/**
+	 * Metodo che riceve una stringa e restituisce un
+	 * array di stringhe ottenuto tramite il metodo split
+	 * (parametro "TAB").
+	 * @param readLine
+	 * @return splitLine
+	 */
+	private String[] divideLines(String readLine) {
+		return readLine.split("	");
+	}			
 
 }
 
