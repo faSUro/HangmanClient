@@ -39,8 +39,6 @@ public class HangmanClientGUI extends AHangmanClient {
 	private BufferedReader in;
 	private PrintWriter out;
 	
-	private static boolean firstClick = true;
-
 	/**
 	 * Metodo che permette al client di connettersi al
 	 * server tramite una socket.
@@ -52,7 +50,10 @@ public class HangmanClientGUI extends AHangmanClient {
 		in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 		out = new PrintWriter(socket.getOutputStream(), true);
 		
-		createGUI();		
+		createGUI();	
+		
+		printLines();
+		
 		setListener();		
 	}
 
@@ -74,7 +75,7 @@ public class HangmanClientGUI extends AHangmanClient {
 		
 		
 		JPanel[] emptyPanel = new JPanel[3]; //label vuote, utili esclusivamente per il layout
-		for (int i = 0; i < 3; i++) {
+		for (int i = 0; i < 2; i++) {
 			emptyPanel[i] = new JPanel();
 		}
 		
@@ -92,12 +93,11 @@ public class HangmanClientGUI extends AHangmanClient {
 		
 		JPanel sendCharPanel = new JPanel();
 		charTextField = new JTextField(20);
-		sendButton = new JButton(" Start ");
+		sendButton = new JButton(" Send character ");
 		sendCharPanel.add(charTextField); sendCharPanel.add(sendButton);
 		
 		mainPanel.add(emptyPanel[0]); mainPanel.add(labelPanel1); mainPanel.add(labelPanel2); 
-		mainPanel.add(labelPanel3);	mainPanel.add(emptyPanel[1]); mainPanel.add(emptyPanel[2]); 
-		mainPanel.add(sendCharPanel);
+		mainPanel.add(labelPanel3);	mainPanel.add(emptyPanel[1]); mainPanel.add(sendCharPanel);
 		
 		gui.add(mainPanel);
 		
@@ -110,69 +110,66 @@ public class HangmanClientGUI extends AHangmanClient {
 	/**
 	 * Metodo che aggiunge un listener al JButton.
 	 * Una volta premuto, stampa il testo nel JTextField tramite il PrintWriter.
-	 * Poi, legge la stringa in entrata dal BufferedReader e la suddivide per
-	 * poi mostrarla tramite le JLabel.
+	 * Poi, chiama il metodo per mostrare la situazione della partita.
 	 * Infine, "svuota" il JTextField del suo contenuto.
 	 */
 	private void setListener() {
 		sendButton.addActionListener(new ActionListener() {
 
 			@Override
-			public void actionPerformed(ActionEvent e) {
-				String[] lineArray = null;
+			public void actionPerformed(ActionEvent e) {					
+				String c = charTextField.getText();
+				out.println(c);	
 				
-				/*
-				 * Questo blocco controlla se il pulsante è già stato premuto oppure no.
-				 * Se non è mai stato premuto, ne cambia il testo da "Start" a "Send character"
-				 * senza fare altro; se è già stato premuto almeno una volta, prende il testo contenuto
-				 * nel JTextField e lo stampa tramite il PrintWriter.
-				 */
-				if (!firstClick) {
-					String c = charTextField.getText();
-					out.println(c);
-				} else {
-					sendButton.setText(" Send character ");
-					firstClick = false;
-				}		
-
-				try {
-					lineArray = divideLines(in.readLine()); //chiamata al metodo che divide la stringa in entrata in più parti
-				} catch (IOException ex) {
-					ex.printStackTrace();
-				}
-				
-				/*
-				 * Blocco che gestisce i diversi casi che si possono verificare
-				 * a seconda del numero di "TAB" presenti nella stringa in entrata.
-				 */
-				switch(lineArray.length) {
-				case 0:
-					setText1("Si è verificato un errore");
-					setText2("");
-					setText3("");
-					break;
-				case 1:
-					setText1(lineArray[0]);
-					setText2("");
-					setText3("");
-					break;
-				case 2:
-					setText1(lineArray[0]);
-					setText2(lineArray[1]);
-					setText3("");
-					break;
-				case 3:
-					setText1(lineArray[0]);
-					setText2(lineArray[1]);
-					setText3(lineArray[2]);
-					break;
-				}
+				printLines();
 
 				charTextField.setText("");	
 			}
 		});
 	}
 	
+	/**
+	 * Metodo che legge la stringa in entrata dal BufferedReader e la suddivide
+	 * per poi mostrarla tramite le JLabel.
+	 */
+	protected void printLines() {
+		String[] lineArray = null;
+		
+		try {
+			lineArray = divideLines(in.readLine()); //chiamata al metodo che divide la stringa in entrata in più parti
+		} catch (IOException ex) {
+			ex.printStackTrace();
+		}
+		
+		/*
+		 * Blocco che gestisce i diversi casi che si possono verificare
+		 * a seconda del numero di "TAB" presenti nella stringa in entrata.
+		 */
+		switch(lineArray.length) {
+		case 0:
+			setText1("Si è verificato un errore");
+			setText2("");
+			setText3("");
+			break;
+		case 1:
+			setText1(lineArray[0]);
+			setText2("");
+			setText3("");
+			break;
+		case 2:
+			setText1(lineArray[0]);
+			setText2(lineArray[1]);
+			setText3("");
+			break;
+		case 3:
+			setText1(lineArray[0]);
+			setText2(lineArray[1]);
+			setText3(lineArray[2]);
+			break;
+		}
+		
+	}
+
 	private void setText1(String text) {
 		label1.setText(text);
 	}
