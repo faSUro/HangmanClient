@@ -14,7 +14,7 @@ import java.net.Socket;
  */
 public class HangmanClient extends AHangmanClient {
 	
-	private BufferedReader inx;
+	private BufferedReader in;
 	private PrintWriter out;
 	private BufferedReader console;
 	
@@ -33,7 +33,7 @@ public class HangmanClient extends AHangmanClient {
 	@Override
 	public void connectToServer() throws IOException {
 		Socket socket = new Socket("localhost", 8888);
-		inx = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+		in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 		out = new PrintWriter(socket.getOutputStream(), true);
 		console = new BufferedReader(new InputStreamReader(System.in));
 
@@ -55,7 +55,7 @@ public class HangmanClient extends AHangmanClient {
 		String[] lineArray = null;
 		
 		try {
-			lineArray = divideLines(inx.readLine()); //chiamata al metodo che divide la stringa in entrata in più parti
+			lineArray = divideLines(in.readLine()); //chiamata al metodo che divide la stringa in entrata in più parti
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		}
